@@ -1,11 +1,11 @@
-(* 
+(*
    Tutorial 1 : Introduction to OCaml
-   
+
    Week of 24th August 2015
 
    Use: ocamlc -annot tut1.ml
    (to compile into an executable a.out, and a type annotation file)
-   
+
    Reference on Ocaml (Real-World OCaml):
       https://realworldocaml.org/
 
@@ -13,72 +13,95 @@
       https://www.lri.fr/~conchon/IPF/fiches/tuareg-mode.pdf
 *)
 
-(* 
+(*
  Q1. Consider the expression below
 *)
- 
+
   let x = 2 in
   let y = 3 in
   let x = x * 4 in
   print_endline ("Q1 Ans = "^(string_of_int (x+y))) ;;
-  
+
 
 (* Which x is being referenced in the last line?
-   What output will be printed? *)
+   What output will be printed?
+
+   11
+
+ *)
 
 (*
 Q2. Consider the expression below
 *)
- 
+
   let x = 2 in
-  let y = let x = x * 4 in 3 in
-  print_endline ("Q2 Ans = "^(string_of_int (x+y))) ;;
+  let y =
+    let x = x * 4 in
+    3 * x in print_endline ("Q2 Ans = "^(string_of_int (x+y))) ;;
 
 (* Which x is being referenced in the last line?
    What output will be printed? *)
-  
+
 (* Q3. Consider the function below *)
- 
-  let foo x = x+1
-   
+
+  let foo x = x + 1
+
 (* What is the type of this function? *)
+
+(* foo : int -> int *)
 
 (* Q4. Consider the function below *)
- 
-  let goo (x,y) = x
-   
+
+  let goo (x, y) = x
+
 (* What is the type of this function? *)
 
 
+  (* val goo : 'a * 'b -> 'a = <fun> *)
+
 (* Q5. Consider the function below *)
- 
+
   let hoo x y = x
-   
-(*  
-    What is the type of this function? 
+
+(*
+    What is the type of this function?
 	Does this function has the same type as ggo?
 	How are the two functions related?
+
+  No, they are not the same. goo takes in a tuple, while hoo takes
+  in two values.
+
+  val hoo : 'a -> 'b -> 'a = <fun>
+
 *)
 
 
 (* Q6. Consider the maxlist function below *)
- 
+
    let rec maxlist xs =
      match xs with
-	 | [] -> failwith "empty list"
-	 | [x] -> x
-	 | x::ys -> 
-		let m2 = maxlist ys in
-		if x>m2 then x
-		else m2 ;;
-		
+     | [] -> failwith "empty list"
+     | [x] -> x
+     | x::ys ->
+         let m2 = maxlist ys in
+         if x > m2 then x
+         else m2 ;;
+
    print_endline ("Q6 Ans (maxlist [3;16;1] = "^(string_of_int (maxlist [3;16;1]))) ;;
    print_endline ("hello");;
 
-(* 
+(*
 	(i) What is the type of this function?
+
+  val maxlist : 'a list -> 'a = <fun>
+
 	(ii) Explain what happen when an empty list is supplied as the input?
-    (iii) Is it possible for recursive maxlist ys call to throw an exception?	
+
+  An exception is raised.
+
+  (iii) Is it possible for recursive maxlist ys call to throw an exception?
+
+  Yes
 *)
 
 (*
@@ -86,14 +109,16 @@ Q2. Consider the expression below
        function, as follows:
 *)
 
-  let maxlist2 xs =
+   let maxlist2 xs =
      let rec aux xs sofar =
-		match xs with
-		| [] -> sofar
-		| x::ys -> failwith "to be completed"
-	in match xs with
-	| [] -> failwith "empty list"
-	| x::ys -> aux ys x
+       match xs with
+       | [] -> sofar
+       | x::ys -> aux ys (max x sofar)
+     in match xs with
+     | [] -> failwith "empty list"
+     | x::ys -> aux ys x;;
+
+  maxlist2 [1; 2; 3];;
 
 (*
    How is this function different from the version in Q6
@@ -111,4 +136,10 @@ Q2. Consider the expression below
 *)
 
   let maxlist3 (xs:int list) : int option =
-    failwith "to be completed"
+    let rec aux xs sofar =
+      match xs with
+      | [] -> sofar
+      | x::ys -> aux ys (max x sofar)
+   in match xs with
+   | [] -> None
+   | x::ys -> Some(aux ys x);;
